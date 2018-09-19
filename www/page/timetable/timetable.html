@@ -1,0 +1,96 @@
+<ons-page id="timetablePage">
+
+    <ons-toolbar>
+        <div class="center">時間割</div>
+    </ons-toolbar>
+
+    <ons-speed-dial position="bottom right" direction="up">
+      <ons-fab>
+        <ons-icon icon="md-share"></ons-icon>
+      </ons-fab>
+      <ons-speed-dial-item>
+        <ons-icon icon="md-twitter" onclick="pushNoclass()"></ons-icon>
+      </ons-speed-dial-item>
+      <ons-speed-dial-item>
+        <ons-icon icon="md-facebook"></ons-icon>
+      </ons-speed-dial-item>
+      <ons-speed-dial-item>
+        <ons-icon icon="md-google-plus"></ons-icon>
+      </ons-speed-dial-item>
+    </ons-speed-dial>
+
+    <form class="jikanwari">
+        <table border="1" cellspacing="0" cellpadding="0" bordercolor="#dbdbdb">
+          <!--
+          <colgroup span="3" class="aaa"></colgroup>
+          <colgroup span="2" class="bbb"></colgroup>
+          <colgroup span="2" class="ccc"></colgroup>
+          -->
+          <tbody>
+            <tr>
+                <td></td>
+                <td>月</td>
+                <td>火</td>
+                <td>水</td>
+                <td>木</td>
+                <td>金</td>
+                <td>土</td>
+            </tr>
+            <tr>
+                <td class="side-space">1</td>
+                <td class="cell" data-num="0" data-dow="mon"></td>
+                <td class="cell" data-num="0" data-dow="tue"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="0" data-dow="wed"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="0" data-dow="thu"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="0" data-dow="fri"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="0" data-dow="sat"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+            </tr>
+            <tr>
+                <td class="side-space">2</td>
+                <td class="cell" data-num="1" data-dow="mon"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="1" data-dow="tue"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="1" data-dow="wed"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="1" data-dow="thu"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="1" data-dow="fri"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="1" data-dow="sat"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+            </tr>
+            <tr>
+                <td class="side-space">3</td>
+                <td class="cell" data-num="2" data-dow="mon"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="2" data-dow="tue"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="2" data-dow="wed"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="2" data-dow="thu"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="2" data-dow="fri"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="2" data-dow="sat"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+            </tr>
+            <tr>
+                <td class="side-space">4</td>
+                <td class="cell" data-num="3" data-dow="mon"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="3" data-dow="tue"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="3" data-dow="wed"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="3" data-dow="thu"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="3" data-dow="fri"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="3" data-dow="sat"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+            </tr>
+            <tr>
+                <td class="side-space">5</td>
+                <td class="cell" data-num="4" data-dow="mon"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="4" data-dow="tue"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="4" data-dow="wed"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="4" data-dow="thu"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="4" data-dow="fri"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="4" data-dow="sat"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+            </tr>
+            <tr>
+                <td class="side-space">6</td>
+                <td class="cell" data-num="5" data-dow="mon"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="5" data-dow="tue"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="5" data-dow="wed"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="5" data-dow="thu"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="5" data-dow="fri"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+                <td class="cell" data-num="5" data-dow="sat"><div class="cellbox"><div class="celltop"><span></span></div><div class="cellbot"><span></span></div></div></td>
+            </tr>
+          </tbody>
+        </table>
+    </form>
+</ons-page>

@@ -1,0 +1,317 @@
+#map { 
+width:100%; 
+height: 100%;
+}
+
+.mapboxgl-ctrl-top-right {
+position: absolute!important;
+top: 50px!important;
+}
+.mapboxgl-ctrl-group {
+border-radius: 50%!important;
+}
+.mapboxgl-ctrl-group > button {
+width: 50px!important;
+height: 50px!important;
+}
+
+/*marker*/
+.marker {
+background-image: url('https://map.penmark.jp/wp-content/uploads/sites/4/2018/03/pin.png');
+background-size: cover;
+border-radius: 50%;
+cursor: pointer;
+transition: opacity .5s;
+position: relative;
+width: 32px;
+}
+.marker.in {
+height: 32px!important;
+-webkit-animation: pinin .5s linear 0s 1;
+}
+.marker.out{
+height:0px!important;
+-webkit-animation: pinout .5s linear 0s 1;
+}
+
+/*detail*/
+#detail.full + .detailbg{
+display: block;
+}
+.detailbg {
+width: 100vw;
+height: 100vh;
+position: absolute;
+top: 0;
+background: rgba(0, 0, 0, 0.5);
+display: none;
+z-index: 3;
+}
+#detail{
+position:fixed;
+bottom:0;
+width:100%;
+max-width: 480px;
+background: #f7f6f4;
+border-radius:10px 10px 0 0;
+z-index: 4;
+}
+#detail .detailContent{
+padding: 0 15px 15px;
+max-height: 0;
+overflow-y: auto;
+-webkit-overflow-scrolling: touch;  
+transition:.5s cubic-bezier(0.18, 0.89, 0.32, 1.1);
+}
+#detail.in .detailContent{
+max-height: 20vh;
+}
+#detail.full .detailContent{
+max-height: 65vh;
+}
+#detail.out .detailContent{
+max-height:0px;
+}
+.detailTitle {
+padding: 0 10px;
+}
+#detail img{
+width: 100%;
+}
+#detail p{
+margin: 0;
+}
+#detail p.title {
+padding: 15px 0 0;
+font-size: 20px;
+font-weight: bold;
+}
+#detail p.subTitle {
+margin: 0;
+padding: 0px 0 15px;
+}
+#detail p.miniTitle {
+font-size: 14px;
+color: #a5a5a5;
+margin: 15px 0 10px;
+padding-bottom: 5px;
+border-bottom: 1px solid rgba(234, 234, 234, 1);
+}
+#detail .eyecatch{
+margin-left:-15px;
+margin-right:-15px;
+}
+#detail table{
+border-spacing: 0;
+}
+#detail td{
+position:relative;
+padding:10px 5px;
+}
+#detail td span {
+background: #1da0ff;
+padding: 10px 7px;
+border-radius: 50%;
+color: white;
+}
+
+#close{
+position: absolute;
+top: 15px;
+right: 15px;
+width: 30px;
+height: 30px;
+border-radius: 50%;
+background:rgba(234, 234, 234, 1);
+border: 0;
+padding: 0;
+z-index: 4;
+}
+#close:before {
+content: "×";
+font-size: 25px;
+position: relative;
+top: -3px;
+color: white;
+}
+label[for="full"] {
+position: absolute;
+top: 5px;
+left: 0;
+right: 0;
+margin: auto;
+width: 35px;
+height: 5px;
+border-radius: 5px;
+background: rgba(234, 234, 234, 1);
+border: 0;
+}
+.building{
+max-height:0;
+overflow: hidden;
+transition:.5s cubic-bezier(0.18, 0.89, 0.32, 1.1);
+}
+.building.show{
+max-height:100vh;
+}
+
+/*search*/        
+input:focus{
+outline: 0;
+}
+.search{
+max-width: 480px;
+font-size:16px;
+width:100%;
+position:absolute;
+top:0;
+margin:0;
+overflow: hidden;
+z-index: 2;
+}
+.search.full{
+height: 100vh;
+}
+.searchBox {
+padding:10px;
+position: relative;
+z-index: 2;
+}
+.search.full .searchBox {
+border-bottom: 1px solid rgba(234, 234, 234, 0.7);
+}
+#search{
+width: 100%;
+height: 40px;
+padding: 0 10px 0 35px;
+border:0;
+border-radius: 10px;
+box-sizing: border-box;
+background: #fff;
+margin: 0;
+max-width: 100%;
+box-shadow: 0px 0px 0px 2px rgba(0,0,0,0.1);
+}
+.searchLogo{    
+position: absolute;
+width: 40px;
+height: 40px;
+top: 12px;
+left: 10px;
+display: inline-block;
+}
+.searchLogo.remove{
+display:none;
+right:10px;
+left:initial;
+}        
+.searchLogo.back{
+display:none;
+}
+.searchLogo:before {
+position: relative;
+top: 5px;
+left: 10px;
+font-family: fontawesome;
+content: "\f002";
+font-size: 16px;
+}
+.searchLogo.remove:before {
+content: "\f00d";
+}
+.searchLogo.back:before {
+top:1px;
+font-size: 25px;
+content: "\f104";
+font-weight: bold;
+}
+
+/*checkbox*/
+input[type="checkbox"]{
+display:none;
+}
+label{
+display: block;
+}
+.checkboxBox {
+width: 100%;
+position: fixed;
+top: 0;
+background: #f7f7f7;
+max-height: 0;
+overflow-y: hidden;
+border-radius: 5px;
+font-size: 14px;
+padding:0;
+transition:.5s cubic-bezier(0.18, 0.89, 0.32, 1.1);
+}
+.search.full .checkboxBox{
+min-height: 100%;
+max-height: 100%;
+overflow-y: auto;
+-webkit-overflow-scrolling: touch;   
+padding:60px 0 0;
+}
+.checkboxBox span {
+display:block;
+}
+.checkboxBox span.extra {
+border-bottom: 1px solid #eaeaea;
+padding: 0 15px 15px;
+}
+.checkboxBox span.title {
+font-size:16px;
+font-weight: bold;
+}
+.checkboxBox span.title:before {
+font-family: fontawesome;
+content: " \f041";
+color: #ff5b46;
+font-size: 30px;
+position: relative;
+top: 15px;
+margin-right: 17px;
+}
+.checkboxBox span.title.build:before {
+color: #1da0ff;
+}
+.checkboxBox span.subTitle {
+font-size: 12px;
+color: #a3a3a3;
+margin-left: 35px;
+}
+
+/*アニメーション*/
+@-webkit-keyframes pinin {
+0%{
+opacity:0;
+height:0px;
+top:-2000px;
+}
+5% {
+height:32px;
+}
+60% {
+opacity: 1;
+top:-30px;
+}
+80% {
+top:10px;
+}
+100% {
+opacity:1;
+top:0;
+}
+}
+@-webkit-keyframes pinout {
+0% {
+opacity :1;
+height:32px;
+}
+95%{
+height:32px;
+}
+100% {
+opacity:0;
+}
+}

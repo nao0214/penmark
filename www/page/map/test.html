@@ -1,0 +1,1133 @@
+<?php
+/**
+* Template Name: top
+*/
+?>
+<?php get_header(); ?>
+
+    <style>
+        /*base*/
+        html {
+          height: 100%;
+          overflow: hidden;
+        }
+        body {
+          position:fixed;  /* またはfixed */
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          overflow: auto;
+        }
+        header{
+            display: none;
+        }
+        footer{
+            display: none;
+        }
+        .mapconts{
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        /*map*/
+        #map { 
+            width:100%; 
+            height: 100%;
+        }
+        .mapboxgl-popup {
+            max-width: 300px;
+        }
+        .mapboxgl-popup .mapboxgl-popup-content{
+            padding:0!important;
+            border-radius: 10px 10px 0 0;
+            overflow:hidden;
+        }
+        .mapboxgl-popup .mapboxgl-popup-content .mapboxgl-popup-close-button {
+            font-size: 20px;
+            font-weight: bold;
+            color: #f7f7f7;
+        }
+        .mapboxgl-popup .mapboxgl-popup-content img {
+            width: 100%;
+        }
+        .mapboxgl-popup .mapboxgl-popup-content p{
+            margin:5px 10px 10px;
+        }
+        .mapboxgl-ctrl-top-right {
+            position: fixed!important;
+            top: 50px!important;
+        }
+        .mapboxgl-ctrl-bottom-left{display: none;}
+        .mapboxgl-ctrl-bottom-right{display: none;}
+        .mapboxgl-ctrl-group {
+            border-radius: 50%!important;
+        }
+        .mapboxgl-ctrl-group > button {
+            width: 50px!important;
+            height: 50px!important;
+        }
+        
+        /*marker*/
+        .marker {
+            background-image: url('https://map.penmark.jp/wp-content/uploads/sites/4/2018/03/pin.png');
+            background-size: cover;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: opacity .5s;
+            position: relative;
+        }
+        .marker{
+            width: 32px;
+        }
+        .marker.in {
+            height: 32px!important;
+            -webkit-animation: pinin .5s linear 0s 1;
+        }
+        .marker.out{
+            height:0px!important;
+            -webkit-animation: pinout .5s linear 0s 1;
+        }
+        
+        /*detail*/
+        #detail.full + .detailbg{
+            display: block;
+        }
+        .detailbg {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 3;
+        }
+        #detail{
+            position:fixed;
+            bottom:0;
+            width:100%;
+            max-width: 480px;
+            background: #f7f6f4;
+            border-radius:10px 10px 0 0;
+            z-index: 4;
+        }
+        #detail .detailContent{
+            padding: 0 15px 15px;
+            max-height: 0;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;  
+            transition:.5s cubic-bezier(0.18, 0.89, 0.32, 1.1);
+        }
+        #detail.in .detailContent{
+            max-height: 20vh;
+        }
+        #detail.full .detailContent{
+            max-height: 65vh;
+        }
+        #detail.out .detailContent{
+            max-height:0px;
+        }
+        .detailTitle {
+            padding: 0 10px;
+        }
+        #detail img{
+            width: 100%;
+        }
+        #detail p{
+            margin: 0;
+        }
+        #detail p.title {
+            padding: 15px 0 0;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        #detail p.subTitle {
+            margin: 0;
+            padding: 0px 0 15px;
+        }
+        #detail p.miniTitle {
+            font-size: 14px;
+            color: #a5a5a5;
+            margin: 15px 0 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(234, 234, 234, 1);
+        }
+        #detail .eyecatch{
+            margin-left:-15px;
+            margin-right:-15px;
+        }
+        table{
+            border-spacing: 0;
+        }
+        td{
+            position:relative;
+            padding:10px 5px;
+        }
+        td span {
+            background: #1da0ff;
+            padding: 10px 7px;
+            border-radius: 50%;
+            color: white;
+        }
+
+        #close{
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background:rgba(234, 234, 234, 1);
+            border: 0;
+            padding: 0;
+            z-index: 4;
+        }
+        #close:before {
+            content: "×";
+            font-size: 25px;
+            position: relative;
+            top: -3px;
+            color: white;
+        }
+        label[for="full"] {
+            position: absolute;
+            top: 5px;
+            left: 0;
+            right: 0;
+            margin: auto;
+            width: 35px;
+            height: 5px;
+            border-radius: 5px;
+            background: rgba(234, 234, 234, 1);
+            border: 0;
+        }
+        .content{
+            max-height:0;
+            overflow: hidden;
+            transition:.5s cubic-bezier(0.18, 0.89, 0.32, 1.1);
+        }
+        .content.show{
+            max-height:100vh;
+        }
+
+        /*search*/        
+        input:focus{
+            outline: 0;
+        }
+        .search{
+            max-width: 480px;
+            font-size:16px;
+            width:100%;
+            position:fixed;
+            top:0;
+            margin:0;
+            overflow: hidden;
+            z-index: 2;
+        }
+        .search.full{
+            height: 100vh;
+        }
+        .searchBox {
+            padding:10px;
+            position: relative;
+            z-index: 2;
+        }
+        .search.full .searchBox {
+            border-bottom: 1px solid rgba(234, 234, 234, 0.7);
+        }
+        #search{
+            width: 100%;
+            height: 40px;
+            padding: 0 10px 0 35px;
+            border:0;
+            border-radius: 10px;
+            box-sizing: border-box;
+            background: #fff;
+            margin: 0;
+            max-width: 100%;
+            box-shadow: 0px 0px 0px 2px rgba(0,0,0,0.1);
+        }
+        .searchLogo{    
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            top: 12px;
+            left: 10px;
+            display: inline-block;
+        }
+        .searchLogo.remove{
+            display:none;
+            right:10px;
+            left:initial;
+        }        
+        .searchLogo.back{
+            display:none;
+        }
+        .searchLogo:before {
+            position: relative;
+            top: 5px;
+            left: 10px;
+            font-family: fontawesome;
+            content: "\f002";
+            font-size: 16px;
+        }
+        .searchLogo.remove:before {
+            content: "\f00d";
+        }
+        .searchLogo.back:before {
+            top:1px;
+            font-size: 25px;
+            content: "\f104";
+            font-weight: bold;
+        }
+        
+        /*checkbox*/
+        input[type="checkbox"]{
+            display:none;
+        }
+        label{
+            display: block;
+        }
+        .checkboxBox {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            background: #f7f7f7;
+            max-height: 0;
+            overflow-y: hidden;
+            border-radius: 5px;
+            font-size: 14px;
+            padding:0;
+            transition:.5s cubic-bezier(0.18, 0.89, 0.32, 1.1);
+        }
+        .search.full .checkboxBox{
+            min-height: 100%;
+            max-height: 100%;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;   
+            padding:60px 0 0;
+        }
+        .checkboxBox span {
+            display:block;
+        }
+        .checkboxBox span.extra {
+            border-bottom: 1px solid #eaeaea;
+            padding: 0 15px 15px;
+        }
+        .checkboxBox span.title {
+            font-size:16px;
+            font-weight: bold;
+        }
+        .checkboxBox span.title:before {
+            font-family: fontawesome;
+            content: " \f041";
+            color: #ff5b46;
+            font-size: 30px;
+            position: relative;
+            top: 15px;
+            margin-right: 17px;
+        }
+        .checkboxBox span.title.build:before {
+            color: #1da0ff;
+        }
+        .checkboxBox span.subTitle {
+            font-size: 12px;
+            color: #a3a3a3;
+            margin-left: 35px;
+        }
+            
+        /*アニメーション*/
+        @-webkit-keyframes pinin {
+            0%{
+                opacity:0;
+                height:0px;
+                top:-2000px;
+            }
+            5% {
+                height:32px;
+            }
+            60% {
+                opacity: 1;
+                top:-30px;
+            }
+            80% {
+                top:10px;
+            }
+            100% {
+                opacity:1;
+                top:0;
+            }
+        }
+        @-webkit-keyframes pinout {
+            0% {
+                opacity :1;
+                height:32px;
+            }
+            95%{
+                height:32px;
+            }
+            100% {
+                opacity:0;
+            }
+        }
+    </style>
+    
+<div class="mapconts" style="position:relative;">
+    <div id='map'></div>
+    <div id="detail">
+        <button id='close'></button>
+        <label for="full"><input type="checkbox" id='full'></label>
+        
+        <div class="content content1">
+            <div class="detailTitle">
+                <p class='title'>第4校舎独立館</p>
+                <p class='subTitle'>日吉キャンパス</p>
+            </div>
+            <div class="detailContent">
+                <div class='eyecatch'><img src='https://map.penmark.jp/wp-content/uploads/sites/4/2018/03/no4d.jpg' alt='第4校舎独立館'></div><p class='miniTitle'>フロアガイド</p><table><tbody><tr><td class='floor'><span>4F</span></td><td>D401〜D413</td></tr><tr><td class='floor'><span>3F</span></td><td>D301〜D312</td></tr><tr><td class='floor'><span>2F</span></td><td>D201〜D206</td></tr> <tr><td class='floor'><span>1F</span></td><td>D101・学生部・学生相談室</td></tr><tr><td><span>B1</span></td><td>DB105〜DB113・日吉グローバルスタジオ・日吉コミュニケーションラウンジ・学生活動支援スペース・インフォメーションスペース・ラウンジ・和室「日吉の家」</td></tr><tr><td class='floor'><span>B2</span></td><td>DB201〜DB203</td></tr></tbody></table>
+            </div>
+        </div>
+        <div class="content content2">
+            <div class="detailTitle">
+                <p class='title'>第4校舎A棟</p>
+                <p class='subTitle'>日吉キャンパス</p>
+            </div>
+            <div class="detailContent">
+                <div class='eyecatch'><img src='https://map.penmark.jp/wp-content/uploads/sites/4/2018/03/no4a.jpg' alt='第4校舎A棟'></div><p class='miniTitle'>フロアガイド</p><table><tbody><tr><td class='floor'><span>4F</span></td><td>J411〜J417</td></tr><tr><td class='floor'><span>3F</span></td><td>J421〜J427</td></tr><tr><td class='floor'><span>2F</span></td><td>J431A〜J437B</td></tr> <tr><td class='floor'><span>1F</span></td><td>J441〜J447</td></tr></tbody></table>
+            </div>
+        </div>
+        <div class="content content3">
+            <div class="detailTitle">
+                <p class='title'>第4校舎B棟</p><p class='subTitle'>日吉キャンパス</p>
+            </div>
+            <div class="detailContent">
+                <div class='eyecatch'><img src='https://map.penmark.jp/wp-content/uploads/sites/4/2018/03/no4b.jpg' alt='第4校舎B棟'></div><p class='miniTitle'>フロアガイド</p><table><tbody><tr><td class='floor'><span>3F</span></td><td>32・33・39・セミ3・ゼミ4</td></tr><tr><td class='floor'><span>2F</span></td><td>J21・22・23・J24・J29</td></tr> <tr><td class='floor'><span>1F</span></td><td>J11・12・13・J14・J19</td></tr></tbody></table>
+            </div>
+        </div>
+        <div class="content content4">
+            <div class="detailTitle">
+                <p class='title'>第3校舎</p><p class='subTitle'>日吉キャンパス</p>            
+            </div>
+            <div class="detailContent">
+                <div class='eyecatch'><img src='https://map.penmark.jp/wp-content/uploads/sites/4/2018/03/no3.jpg' alt='第3校舎'></div><p class='miniTitle'>フロアガイド</p><table><tbody><tr><td class='floor'><span>3F</span></td><td>331〜336</td></tr><tr><td class='floor'><span>2F</span></td><td>325〜329・外国語教育研究センター</td></tr> <tr><td class='floor'><span>1F</span></td><td>301〜312</td></tr></tbody></table>            
+            </div>
+        </div>
+        <div class="content content5">
+            <div class="detailTitle">
+                <p class='title'>第6校舎</p><p class='subTitle'>日吉キャンパス</p>
+            </div>
+            <div class="detailContent">
+                <div class='eyecatch'><img src='https://map.penmark.jp/wp-content/uploads/sites/4/2018/03/no6.jpg' alt='第6校舎'></div><p class='miniTitle'>フロアガイド</p><table><tbody><tr><td class='floor'><span>4F</span></td><td>641・642</td></tr><tr><td class='floor'><span>3F</span></td><td>J631J・632・J634</td></tr><tr><td class='floor'><span>2F</span></td><td>621A〜623・ゼミA・ゼミB</td></tr> <tr><td class='floor'><span>1F</span></td><td>J611・J612・613・614・学生食堂グリーンズテラス</td></tr></tbody></table>
+            </div>
+        </div>
+        <div class="content content6">
+            <div class="detailTitle">
+                <p class='title'>第2・8校舎</p><p class='subTitle'>日吉キャンパス</p>
+            </div>
+            <div class="detailContent">
+                <div class='eyecatch'><img src='https://map.penmark.jp/wp-content/uploads/sites/4/2018/03/no2.jpg' alt='第2・8校舎'></div><p class='miniTitle'>第2校舎フロアガイド</p><table><tbody><tr><td class='floor'><span>3F</span></td><td>231・232・234　244</td></tr><tr><td class='floor'><span>2F</span></td><td>221・222・224</td></tr><tr><td class='floor'><span>1F</span></td><td>212〜214</td></tr></tbody></table><p class='miniTitle'>第8校舎フロアガイド</p><table><tbody><tr><td class='floor'><span>4F</span></td><td>日吉心理学教室</td></tr><tr><td class='floor'><span>3F</span></td><td>831・日吉美術研究室</td></tr><tr><td class='floor'><span>2F</span></td><td>811・812</td></tr> <tr><td class='floor'><span>1F</span></td><td>811・812・日吉音楽研究室</td></tr></tbody></table>
+            </div>
+        </div>
+        <div class="content content7">
+            <div class="detailTitle">
+                <p class='title'>図書館（メディアセンター）</p><p class='subTitle'>日吉キャンパス</p>
+            </div>
+            <div class="detailContent">
+                <div class='eyecatch'><img src='https://map.penmark.jp/wp-content/uploads/sites/4/2018/03/mc.jpg' alt='メディア'></div><p class='miniTitle'>フロアガイド</p><table><tbody><tr><td class='floor'><span>4F</span></td><td>貴重書室・マイクロ室・接写台・キュービクル</td></tr><tr><td class='floor'><span>3F</span></td><td>語学学習コーナー・北閲覧室</td></tr><tr><td class='floor'><span>2F</span></td><td>グループ学習室・バルコニーコレクション・塾員著作コーナー・PCエリア</td></tr> <tr><td class='floor'><span>1F</span></td><td>メインカウンター・スタディサポート・AVコーナー・PCエリア・新聞雑誌コーナー・教科書コーナー・クイックレファレンスコーナー・レファレンスコーナー・新着図書・展示ケース</td></tr><tr><td class='floor'><span>B1</span></td><td>地下書庫・AVホール</td></tr></tbody></table>
+            </div>
+        </div>
+        <div class="content content8">
+            <div class="detailTitle">
+                <p class='title'>ITC（コンピュータ・ネットワーク）</p><p class='subTitle'>日吉キャンパス</p>
+            </div>
+            <div class="detailContent">
+                <div class='eyecatch'><img src='https://map.penmark.jp/wp-content/uploads/sites/4/2018/03/itc.jpeg' alt='ITC'></div>
+            </div>
+        </div>
+        <div class="content content9">
+            <div class="detailTitle">
+                <p class='title'>藤山記念館<br>図書館（メディアセンター）AVホール</p><p class='subTitle'>日吉キャンパス</p>
+            </div>
+            <div class="detailContent">
+                <div class='eyecatch'><img src='https://map.penmark.jp/wp-content/uploads/sites/4/2018/03/Fujiyama.jpg' alt='藤山記念館'></div><p class='miniTitle'>藤山記念館フロアガイド</p><table><tbody><tr><td class='floor'><span>2F</span></td><td>自習室・F21</td></tr> <tr><td class='floor'><span>1F</span></td><td>会議室・F11</td></tr><tr><td class='floor'><span>B1</span></td><td>F01</td></tr></tbody></table><p class='miniTitle'>図書館（メディアセンター）AVホールフロアガイド</p><table><tbody><tr><td class='floor'><span>4F</span></td><td>東・西閲覧室貴重書室・マイクロ室・接写台・キュービクル</td></tr><tr><td class='floor'><span>3F</span></td><td>東・西閲覧室</td></tr><tr><td class='floor'><span>2F</span></td><td>東・西閲覧室</td></tr> <tr><td class='floor'><span>1F</span></td><td>レファレンスコーナー・ラウンジ</td></tr><tr><td class='floor'><span>B1</span></td><td>AVホール</td></tr></tbody></table>
+            </div>
+        </div>
+        <div class="content content10">
+            <div class="detailTitle">
+                <p class='title'>第7校舎</p><p class='subTitle'>日吉キャンパス</p>
+            </div>
+            <div class="detailContent">
+                <div class='eyecatch'><img src='https://map.penmark.jp/wp-content/uploads/sites/4/2018/03/no7.jpg' alt='第7校舎'></div><p class='miniTitle'>フロアガイド</p><table><tbody><tr><td class='floor'><span>3F</span></td><td>理工学部基礎教室</td></tr><tr><td class='floor'><span>2F</span></td><td>理工学部基礎教室</td></tr> <tr><td class='floor'><span>1F</span></td><td>理工学部基礎教室</td></tr><tr><td class='floor'><span>B1</span></td><td>701・703・704</td></tr></tbody></table>
+            </div>
+        </div>
+        <div class="content content11">
+            <div class="detailTitle">
+                <p class='title'>学生食堂</p><p class='subTitle'>日吉キャンパス</p>
+            </div>
+            <div class="detailContent">
+                <div class='eyecatch'><img src='https://map.penmark.jp/wp-content/uploads/sites/4/2018/03/cafeteria.jpg' alt='学生食堂'></div><p class='miniTitle'>フロアガイド</p><table><tbody><tr><td class='floor'><span>3F</span></td><td>学生団体活動スペース</td></tr><tr><td class='floor'><span>2F</span></td><td>グリーンズマルシェ・G's Café・SABOTEN Express</td></tr> <tr><td class='floor'><span>1F</span></td><td>遊遊キッチン・麺's 遊遊</td></tr></tbody></table>
+            </div>
+        </div>
+        <div class="content content12">
+            <div class="detailTitle">
+                <p class='title'>塾生会館</p><p class='subTitle'>日吉キャンパス</p>
+            </div>
+            <div class="detailContent">
+                <div class='eyecatch'><img src='https://map.penmark.jp/wp-content/uploads/sites/4/2018/03/jukuseikaikan.jpg' alt='塾生会館'></div><p class='miniTitle'>塾生会館案内</p><p>館内には約70の学生団体ルームと地階に音楽練習室、演劇、舞踏関係のための合同練習室、2階に大ホールがあり、さらに印刷室、暗室等が設けられています。</p><p>この他に学生保険互助組合の事業として、トレーニングルーム、シャワー室が設けられ、塾生は使用料を支払うことにより誰でも利用することができます。</p><p>また1階ロビーにあるラウンジは、塾生の憩いの場として利用されています。</p>
+            </div>
+        </div>
+        <div class="content content13">
+            <div class="detailTitle">
+                <p class='title'>協生館</p><p class='subTitle'>日吉キャンパス</p>
+            </div>
+            <div class="detailContent">
+                <div class='eyecatch'><img src='https://map.penmark.jp/wp-content/uploads/sites/4/2018/03/kyousei.jpg' alt='協生館'></div><p class='miniTitle'>フロアガイド</p><table><tbody><tr><td class='floor'><span>7F</span></td><td>研修宿泊施設</td></tr><tr><td class='floor'><span>6F</span></td><td>大学院研究室</td></tr><tr><td class='floor'><span>5F</span></td><td>大学院研究室</td></tr><tr><td class='floor'><span>4F</span></td><td>協生館図書室（メディアセンター）・経営管理研究科（ビジネス・スクール)(KBS)・大学院教室</td></tr><tr><td class='floor'><span>3F</span></td><td>システムデザイン・マネジメント研究科（SDM）・メディアデザイン研究科（KMD）</td></tr><tr><td class='floor'><span>2F</span></td><td>コラボレーションスペース・日吉学術研究支援課・控え室・イベントホール・クイーンアリスガーデンテラス日吉・多目的教室1・多目的教室2・多目的教室3・日吉学生部大学院・藤原洋記念ホール</td></tr><tr><td class='floor'><span>1F</span></td><td>ローソン慶應日吉店・HUB慶應日吉店・日本調剤慶應日吉薬局・TULLY'S慶應日吉店・セントラルウェルネスクラブ慶應日吉・ラウンジ・日吉メディカルクリニック・防災センター・運営センター・MLS日吉スタジオ・伊藤忠アーバンコミュニティ株式会社・ベネッセ日吉保育園</td></tr><tr><td class='floor'><span>B1</span></td><td>セントラルウェルネスクラブ慶應日吉・トレーニング室・エクササイズスタジオ・プール</td></tr><tr><td class='floor'><span>B2</span></td><td>協生館学生団体スペース・協生館駐車場</td></tr></tbody></table>
+            </div>
+        </div>
+        <div class="content content14">
+            <div class="detailTitle">
+                <p class='title'>自転車駐輪場</p><p class='subTitle'>日吉キャンパス</p>
+            </div>
+            <div class="detailContent">
+                <div class='eyecatch'><img src='https://map.penmark.jp/wp-content/uploads/sites/4/2018/04/bp1.jpg' alt='自転車駐輪場'></div><p>第1駐輪場</p><div class='eyecatch'><img src='https://map.penmark.jp/wp-content/uploads/sites/4/2018/04/bp2.jpg' alt='自転車駐輪場'></div><p>第2駐輪場</p>
+            </div>
+        </div>
+        <div class="content content15">
+            <div class="detailTitle">
+                <p class='title'>生協（慶應義塾大学生活協同組合）</p><p class='subTitle'>日吉キャンパス</p>
+            </div>
+            <div class="detailContent">
+                <div class='eyecatch'><img src='https://map.penmark.jp/wp-content/uploads/sites/4/2018/03/seikyou.jpg' alt='生協'></div><p class='miniTitle'>フロアガイド</p><table><tbody><tr><td class='floor'><span>3F</span></td><td>スタディガイド・トラベルフロア</td></tr><tr><td class='floor'><span>2F</span></td><td>書籍・パソコンフロア</td></tr> <tr><td class='floor'><span>1F</span></td><td>コンビニエンスフロア</td></tr></tbody></table>
+            </div>
+        </div>
+        <div class="content content16">
+            <div class="detailTitle">
+                <p class='title'>来往舎</p><p class='subTitle'>日吉キャンパス</p>
+            </div>
+            <div class="detailContent">
+                <div class='eyecatch'><img src='https://map.penmark.jp/wp-content/uploads/sites/4/2018/03/raiousya.jpg' alt='来往舎'></div><p class='miniTitle'>フロアガイド</p><table><tbody><tr><td class='floor'><span>2F</span></td><td>小会議室・中会議室・大会議室</td></tr> <tr><td class='floor'><span>1F</span></td><td>イベントテラス・ギャラリー・スタジオ（105・106）・編集室（107）・シンポジウムスペース</td></tr></tbody></table>
+            </div>
+        </div>
+        <div class="content content17">
+            <div class="detailTitle">
+                <p class='title'>慶応一貫教育校（小中高）</p><p class='subTitle'>日吉キャンパス</p>
+            </div>
+            <div class="detailContent">
+                <div class='eyecatch'><img src='https://map.penmark.jp/wp-content/uploads/sites/4/2018/03/ikkan.jpg' alt='慶應一貫教育校'></div>
+            </div>
+        </div>
+        
+    </div>
+    <div class="detailbg"></div>
+    <div class="search">
+        <div class="searchBox">
+            <span class="searchLogo"></span>
+            <span class="searchLogo remove"></span>
+            <span class="searchLogo back"></span>
+            <input type="text" id="search" placeholder="校舎名または教室名を検索します"/>
+        </div>
+        <div class="checkboxBox">
+            <label for="checkbox1">
+                <input id="checkbox1" class="checkbox" name="map" type="checkbox">
+                <span class="extra"><span class="title build">第4校舎独立館</span><span class="subTitle">日吉キャンパス</span></span>
+                <span class="extra"><span class="title">D101</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">学生相談室</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">学生部</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D201</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D202</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D203</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D204</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D205</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D206</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D301</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D302</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D303</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D304</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D305</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D306</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D307</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D308</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D309</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D310</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D311</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D312</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D401</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D402</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D403</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D404</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D405</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D406</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D407</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D408</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D409</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D410</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D411</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D412</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">D413</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">DB105</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">DB106</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">DB107</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">DB108</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">DB109</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">DB110</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">DB111</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">DB112</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">DB113</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">日吉グローバルスタジオ</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">日吉コミュニケーションラウンジ</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">学生活動支援スペース</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">インフォメーションスペース</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">ラウンジ</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">和室「日吉の家」</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">DB201</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">DB202</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">DB203</span><span class="subTitle">第4校舎独立館（日吉キャンパス）</span></span>
+            </label>
+            <label for="checkbox2">
+                <input id="checkbox2" class="checkbox" name="map" type="checkbox">
+                <span class="extra"><span class="title build">第4校舎A棟</span><span class="subTitle">日吉キャンパス</span></span>
+                    <span class="extra"><span class="title">J411</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J412</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J413</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J414</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J415</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J416</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J417</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J421</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J422</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J423</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J424</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J425</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J426</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J427</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J431A</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J431B</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J432A</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J432B</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J433A</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J433B</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J434A</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J434B</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J435A</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J435B</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J436A</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J436B</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J437A</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J437B</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J441</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J442</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J443</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J444</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J445</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J446</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J447</span><span class="subTitle">第4校舎A棟（日吉キャンパス）</span></span>
+            </label>
+            <label for="checkbox3">
+                <input id="checkbox3" class="checkbox" name="map" type="checkbox">
+                <span class="extra"><span class="title build">第4校舎B棟</span><span class="subTitle">第4校舎B棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J11</span><span class="subTitle">第4校舎B棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">12</span><span class="subTitle">第4校舎B棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">13</span><span class="subTitle">第4校舎B棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J14</span><span class="subTitle">第4校舎B棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J21</span><span class="subTitle">第4校舎B棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">22</span><span class="subTitle">第4校舎B棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">23</span><span class="subTitle">第4校舎B棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J24</span><span class="subTitle">第4校舎B棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">32</span><span class="subTitle">第4校舎B棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">33</span><span class="subTitle">第4校舎B棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J19</span><span class="subTitle">第4校舎B棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J29</span><span class="subTitle">第4校舎B棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">39</span><span class="subTitle">第4校舎B棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">ゼミ4</span><span class="subTitle">第4校舎B棟（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">ゼミ3</span><span class="subTitle">第4校舎B棟（日吉キャンパス）</span></span>
+            </label>
+            <label for="checkbox4">
+                <input id="checkbox4" class="checkbox" class="checkbox" name="map" type="checkbox">
+                <span class="extra"><span class="title build">第3校舎</span><span class="subTitle">日吉キャンパス</span></span>
+                    <span class="extra"><span class="title">301</span><span class="subTitle">第3校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">302</span><span class="subTitle">第3校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">303</span><span class="subTitle">第3校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">304</span><span class="subTitle">第3校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">305</span><span class="subTitle">第3校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">306</span><span class="subTitle">第3校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">307</span><span class="subTitle">第3校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">308</span><span class="subTitle">第3校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">309</span><span class="subTitle">第3校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">310</span><span class="subTitle">第3校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">311</span><span class="subTitle">第3校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">312</span><span class="subTitle">第3校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">325</span><span class="subTitle">第3校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">326</span><span class="subTitle">第3校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">327</span><span class="subTitle">第3校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">328</span><span class="subTitle">第3校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">329</span><span class="subTitle">第3校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">外国語教育研究センター</span><span class="subTitle">第3校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">331</span><span class="subTitle">第3校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">332</span><span class="subTitle">第3校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">334</span><span class="subTitle">第3校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">335</span><span class="subTitle">第3校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">336</span><span class="subTitle">第3校舎（日吉キャンパス）</span></span>
+            </label>
+            <label for="checkbox5">
+                <input id="checkbox5" class="checkbox" name="map" type="checkbox">
+                <span class="extra"><span class="title build">第6校舎</span><span class="subTitle">日吉キャンパス</span></span>
+                    <span class="extra"><span class="title">J611</span><span class="subTitle">第6校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J612</span><span class="subTitle">第6校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">613</span><span class="subTitle">第6校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">614</span><span class="subTitle">第6校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">学生食堂グリーンズテラス</span><span class="subTitle">第6校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">621A</span><span class="subTitle">第6校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">621B</span><span class="subTitle">第6校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">622A</span><span class="subTitle">第6校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">622B</span><span class="subTitle">第6校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">623</span><span class="subTitle">第6校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J631</span><span class="subTitle">第6校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J632</span><span class="subTitle">第6校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">J634</span><span class="subTitle">第6校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">641</span><span class="subTitle">第6校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">642</span><span class="subTitle">第6校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">ゼミA</span><span class="subTitle">第6校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">ゼミB</span><span class="subTitle">第6校舎（日吉キャンパス）</span></span>
+            </label>
+            <label for="checkbox6">
+                <input id="checkbox6" class="checkbox" name="map" type="checkbox">
+                    <span class="extra"><span class="title build">第2校舎</span><span class="subTitle">日吉キャンパス</span></span>
+                    <span class="extra"><span class="title">第8校舎</span><span class="subTitle">日吉キャンパス</span></span>
+                    <span class="extra"><span class="title">212</span><span class="subTitle">第2校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">213</span><span class="subTitle">第2校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">214</span><span class="subTitle">第2校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">221</span><span class="subTitle">第2校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">222</span><span class="subTitle">第2校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">224</span><span class="subTitle">第2校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">231</span><span class="subTitle">第2校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">232</span><span class="subTitle">第2校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">234</span><span class="subTitle">第2校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">244</span><span class="subTitle">第2校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">811</span><span class="subTitle">第8校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">812</span><span class="subTitle">第8校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">831</span><span class="subTitle">第8校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">日吉心理学教室</span><span class="subTitle">第8校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">日吉美術研究室</span><span class="subTitle">第8校舎（日吉キャンパス）</span></span>
+                    <span class="extra"><span class="title">日吉音楽研究室</span><span class="subTitle">第8校舎（日吉キャンパス）</span></span>
+            </label>
+            <label for="checkbox7">
+                <input id="checkbox7" class="checkbox" name="map" type="checkbox">
+                <span class="extra"><span class="title build">図書館（メディアセンター）</span><span class="subTitle">日吉キャンパス</span></span>
+                <span class="extra"><span class="title">貴重書室</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">マイクロ室</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">接写台</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">キュービクル</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">語学学習コーナー</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">北閲覧室</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">グループ学習室</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">バルコニーコレクション</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">塾員著作コーナー</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">PCエリア</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">メインカウンター</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">スタディサポート</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">AVコーナー</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">PCエリア</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">新聞雑誌コーナー</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">教科書コーナー</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">クイックレファレンスコーナー</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">レファレンスコーナー</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">新着図書</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">展示ケース</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">地下書庫</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">AVホール</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+            </label>
+            <label for="checkbox8">
+                <input id="checkbox8" class="checkbox" name="map" type="checkbox">
+                <span class="extra"><span class="title build">ITC（コンピュータ・ネットワーク）</span><span class="subTitle">日吉キャンパス</span></span>
+            </label>
+            <label for="checkbox9">
+                <input id="checkbox9" class="checkbox" name="map" type="checkbox">
+                <span class="extra"><span class="title build">図書館（メディアセンター）</span><span class="subTitle">日吉キャンパス</span></span>
+                <span class="extra"><span class="title build">藤山記念館</span><span class="subTitle">日吉キャンパス</span></span>
+                <span class="extra"><span class="title">AVホール</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">F01</span><span class="subTitle">藤山記念館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">F11</span><span class="subTitle">藤山記念館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">F21</span><span class="subTitle">藤山記念館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">自習室</span><span class="subTitle">藤山記念館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">会議室</span><span class="subTitle">藤山記念館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">東西閲覧室</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">貴重書室</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">マイクロ室</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">接写台</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">キュービクル</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">東西閲覧室</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">東西閲覧室</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">レファレンスコーナー</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">ラウンジ</span><span class="subTitle">図書室（メディアセンター）（日吉キャンパス）</span></span>
+            </label>
+            <label for="checkbox10">
+                <input id="checkbox10" class="checkbox" name="map" type="checkbox">
+                <span class="extra"><span class="title build">第7校舎</span><span class="subTitle">日吉キャンパス</span></span>
+                <span class="extra"><span class="title">701</span><span class="subTitle">第7校舎（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">703</span><span class="subTitle">第7校舎（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">704</span><span class="subTitle">第7校舎（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">理工学部基礎教室</span><span class="subTitle">第7校舎（日吉キャンパス）</span></span>
+            </label>
+            <label for="checkbox11">
+                <input id="checkbox11" class="checkbox" name="map" type="checkbox">
+                <span class="extra"><span class="title build">学生食堂</span><span class="subTitle">日吉キャンパス</span></span>
+                <span class="extra"><span class="title">学生団体活動スペース</span><span class="subTitle">学生食堂（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">G's Café</span><span class="subTitle">学生食堂（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">グリーンズマルシェ</span><span class="subTitle">学生食堂（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">SABOTEN Express</span><span class="subTitle">学生食堂（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">遊遊キッチン</span><span class="subTitle">学生食堂（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">麺's 遊遊</span><span class="subTitle">学生食堂（日吉キャンパス）</span></span>
+            </label>
+            <label for="checkbox12">
+                <input id="checkbox12" class="checkbox" name="map" type="checkbox">
+                <span class="extra"><span class="title build">塾生会館</span><span class="subTitle">日吉キャンパス</span></span>
+                <span class="extra"><span class="title">学生団体ルーム</span><span class="subTitle">塾生会館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">トレーニングルーム</span><span class="subTitle">塾生会館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">シャワー室</span><span class="subTitle">塾生会館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">音楽練習室</span><span class="subTitle">塾生会館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">合同練習室</span><span class="subTitle">塾生会館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">大ホール</span><span class="subTitle">塾生会館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">印刷室</span><span class="subTitle">塾生会館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">暗室</span><span class="subTitle">塾生会館（日吉キャンパス）</span></span>
+            </label>
+            <label for="checkbox13">
+                <input id="checkbox13" class="checkbox" name="map" type="checkbox">
+                <span class="extra"><span class="title build">協生館</span><span class="subTitle">日吉キャンパス</span></span>
+                <span class="extra"><span class="title">研修宿泊施設</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">大学院研究室</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">大学院研究室</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">協生館図書室（メディアセンター）</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">経営管理研究科（ビジネス・スクール)(KBS)</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">大学院教室</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">システムデザイン・マネジメント研究科（SDM）</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">メディアデザイン研究科（KMD）</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">コラボレーションスペース</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">日吉学術研究支援課</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">控え室</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">イベントホール</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">クイーンアリスガーデンテラス日吉</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">多目的教室1</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">多目的教室2</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">多目的教室3</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">日吉学生部大学院</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">藤原洋記念ホール</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">ローソン慶應日吉店</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">HUB慶應日吉店</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">日本調剤慶應日吉薬局</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">TULLY'S慶應日吉店</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">セントラルウェルネスクラブ慶應日吉</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">ラウンジ</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">日吉メディカルクリニック</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">防災センター</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">運営センター</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">MLS日吉スタジオ</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">伊藤忠アーバンコミュニティ株式会社</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">ベネッセ日吉保育園</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">セントラルウェルネスクラブ慶應日吉</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">トレーニング室</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">エクササイズスタジオ</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">プール</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">協生館学生団体スペース</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">協生館駐車場</span><span class="subTitle">協生館（日吉キャンパス）</span></span>
+            </label>
+            <label for="checkbox14">
+                <input id="checkbox14" class="checkbox" name="map" type="checkbox">
+                <span class="extra"><span class="title build">自転車駐輪場</span><span class="subTitle">日吉キャンパス</span></span>
+                <span class="extra"><span class="title">第2駐輪場</span><span class="subTitle">自転車駐輪場（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">第3駐輪場</span><span class="subTitle">自転車駐輪場（日吉キャンパス）</span></span>
+            </label>
+            <label for="checkbox15">
+                <input id="checkbox15" class="checkbox" name="map" type="checkbox">
+                <span class="extra"><span class="title build">生協（慶應義塾生活協同組合）</span><span class="subTitle">日吉キャンパス</span></span>
+                <span class="extra"><span class="title">スタディガイド・トラベルフロア</span><span class="subTitle">生協（慶應義塾生活協同組合）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">書籍・パソコンフロア</span><span class="subTitle">生協（慶應義塾生活協同組合）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">コンビニエンスフロア</span><span class="subTitle">生協（慶應義塾生活協同組合）（日吉キャンパス）</span></span>
+            </label>
+            <label for="checkbox16">
+                <input id="checkbox16" class="checkbox" name="map" type="checkbox">
+                <span class="extra"><span class="title build">来往舎</span><span class="subTitle">日吉キャンパス</span></span>
+                <span class="extra"><span class="title">小会議室</span><span class="subTitle">来往舎（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">中会議室</span><span class="subTitle">来往舎（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">大会議室</span><span class="subTitle">来往舎（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">イベントテラス</span><span class="subTitle">来往舎（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">ギャラリー・スタジオ（105・106）</span><span class="subTitle">来往舎（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">編集室（107）</span><span class="subTitle">来往舎（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">シンポジウムスペース</span><span class="subTitle">来往舎（日吉キャンパス）</span></span>
+            </label>
+            <label for="checkbox17">
+                <input id="checkbox17" class="checkbox" name="map" type="checkbox">
+                <span class="extra"><span class="title build">慶應一貫教育校（小中高）</span><span class="subTitle">日吉キャンパス</span></span>
+                <span class="extra"><span class="title">慶應義塾幼稚舎</span><span class="subTitle">慶應一貫教育校（小中高）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">慶應義塾中等部</span><span class="subTitle">慶應一貫教育校（小中高）（日吉キャンパス）</span></span>
+                <span class="extra"><span class="title">慶應義塾高等学校</span><span class="subTitle">慶應一貫教育校（小中高）（日吉キャンパス）</span></span>
+            </label>
+        </div>
+    </div>
+</div>
+    
+    <!--apiを読み込み-->
+    <script src='https://api.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
+    
+    <!--geocoderを読み込み
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.min.js'></script>
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.css' type='text/css' />-->
+    
+    <!--jQueryの読み込み-->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    
+    <script>
+    /* --------------------------------
+     * base
+     * -------------------------------- */
+        mapboxgl.accessToken = 'pk.eyJ1IjoicGVubWFyayIsImEiOiJjamZkY2s5aDQzdzg0MndxaDJxbXo3bWQxIn0.ME3JvH5zC_iH0Xp7FMJgBQ';
+        
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/penmark/cjflzlrbp0gaj2spsmu1mao7q',
+            center: [139.649, 35.552581100000005],
+            zoom: 16,
+            bearing: 106
+        });
+        
+        // ズームを追加 Add zoom and rotation controls to the map.
+        //map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+        
+        /* 場所検索を追加 geocoder
+        map.addControl(new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken
+        }), 'top-right');*/
+        
+        // 現在地を取得 Add geolocate control to the map.
+        map.addControl(new mapboxgl.GeolocateControl({
+            positionOptions: {
+                enableHighAccuracy: true
+            },
+            trackUserLocation: true
+        }), 'top-right');
+        
+    /* --------------------------------
+     * 定義
+     * -------------------------------- */
+        
+        //markerの定義
+        var marker = [];
+        for(var i = 1; i < 18; i++){
+            marker[i] = document.createElement('div');
+            marker[i].id = 'marker' + i.toString();
+            marker[i].classList.add('marker');
+        };
+        
+        //positionの定義
+        var position = [];
+        position[1] = [139.64831,35.554466];//独立館
+        position[2] = [139.64854973469272,35.554070368024156];//第4校舎A棟
+        position[3] = [139.64867924073627,35.55448183373703];//第4校舎B棟
+        position[4] = [139.64934958079908,35.555262585827094];//第3校舎
+        position[5] = [139.64872308911436,35.555544013236855];//第6校舎
+        position[6] = [139.65021641836438,35.55309673312361];//第28校舎
+        position[7] = [139.64815770869984,35.55353763134076];//図書館メディア
+        position[8] = [139.65052652851068,35.55334551889739];//ITC
+        position[9] = [139.65045338850354,35.55360608173444];//第7校舎（AV富士山）
+        position[10] = [139.65068592996465,35.553309626008584];//第7校舎（理工）
+        position[11] = [139.64939026528054,35.55373192147577];//食堂
+        position[12] = [139.64929114245518,35.554229386341504];//塾生会館
+        position[13] = [139.64734898492856,35.552046116621355];//協生館
+        position[14] = [139.647245565202,35.55106350281868];//駐輪場
+        position[15] = [139.64996554784238,35.5538911262269];//生協
+        position[16] = [139.64942750681348,35.55325718124007];//来往舎
+        position[17] = [139.64984493803246,35.55151675065308];//慶應一貫教育校
+        
+        //checkboxの定義
+        var checkbox = [];
+        for(var i = 1; i < 18; i++){
+            checkbox[i] = document.getElementById("checkbox" + i); 
+        }
+        
+        //その他の定義
+        var detail = document.getElementById("detail");        
+        var close = document.getElementById("close");
+        var logo = document.querySelector(".searchLogo");
+        var search = document.getElementById("search");
+        var checkboxBox = document.querySelector(".checkboxBox");
+        var remove = document.querySelector(".searchLogo.remove");
+        var back = document.querySelector(".searchLogo.back");
+        var full = document.getElementById("full");
+
+    /* --------------------------------
+     * 動作
+     * -------------------------------- */
+        //markerをmapのpositionに追加
+        for(var i = 1; i < 18; i++){
+            new mapboxgl.Marker(marker[i]).setLngLat(position[i]).addTo(map);
+        }
+
+        //checkboxをクリックでmarkerの表示とflyToの実行    
+        function toggleMarker(num){
+            checkbox[num].addEventListener('click', () => 
+               { 
+                map.flyTo({
+                    center: position[num],
+                    bearing: 106,
+                    zoom: 16
+                });
+              }
+            );
+        }
+        for(var i = 1; i < 18; i++){toggleMarker(i)}
+        
+        /*markerのcheckboxの状態に合わせてmarkerの表示を切り替え*/
+        jQuery('.checkboxBox .checkbox').each(function(i){
+            i = i + 1;
+            $(this).change(function() {
+                if($(this).prop('checked')) {
+                    $(marker[i]).addClass("in");
+                    $(marker[i]).removeClass("out");
+                    $(".search").removeClass("full");
+                    $(detail).addClass("in");
+                    $(detail).addClass("middle");
+                    $(detail).removeClass("out");
+                    $(".content" + i).addClass("show");//contentの表示非表示               
+                    $(close).addClass(""+i);//closeにクラスを付与
+                    $(back).click();//backをクリックした時の動作
+                }
+                else if($(this).prop('checked',false)) {
+                    $(marker[i]).addClass("out");
+                    $(marker[i]).removeClass("in");
+                    $(detail).addClass("out");
+                    $(detail).removeClass("in");
+                    $(".content" + i).removeClass("show");//contentの表示非表示             
+                    $(close).removeClass(""+i);//closeのクラスを削除
+                }
+            });
+        });     
+        
+        //detaiのfullの状態に合わせて処理
+        $(full).change(function() {
+            if($(this).prop('checked')) {
+                $(detail).addClass("full");
+                $(detail).removeClass("middle");
+                /*detaiのmax-heightが100vhになるように調節
+                var closeVal = $(close).attr('class');//closeのclassを取得
+                var detailTitleHeight = $(".content" + closeVal + " .detailTitle").height();
+                $(".detailContent").css("max-height","calc(99vh - " + detailTitleHeight + "px)");*/
+            }
+            else if($(this).prop('checked',false)) {
+                $(detail).addClass("middle");
+                $(detail).removeClass("full");
+                //$(".detailContent").css("max-height","");
+            }
+        });
+
+        /*closeをクリック*/        
+        $(close).click(function() {
+            var closeVal = $(close).attr('class');//closeのclassを取得
+            $(checkbox[closeVal]).prop('checked',false).change();
+            $(detail).removeClass("full");
+        });   
+        
+        //removeをクリック
+        remove.addEventListener('click', () => 
+           { 
+            search.value = "";
+            remove.style.display = "none";
+        }
+        );     
+
+        //backをクリック
+        back.addEventListener('click', () => 
+           { 
+            search.value = "";
+            remove.style.display = "none";
+            back.style.display = "none";
+            logo.style.display = "block";
+            $(".search").removeClass("full");
+        }
+        );
+
+        //searchをfocus
+        $(function(){
+          $("#search").focus(function(){
+                $(".search").addClass("full");
+                logo.style.display = "none";
+                back.style.display = "block";
+                $(close).click();//backをクリックした時の動作
+          }).blur(function(){
+          });
+        });        
+        
+        //searchのkeyup
+        $("#search").keyup(function() {
+            if(search.value.length > 0){
+                remove.style.display = "block";
+            }else {
+                remove.style.display = "none";
+            }
+        });
+
+        ////searchの実装
+        $(function() {
+            var $searchInput = $('#search'); // 入力エリア
+            var $searchElem = $('.extra'); // 絞り込む要素
+            var excludedClass = 'is-excluded'; // 絞り込み対象外の要素に付与するclass
+
+            // 絞り込み処理
+            function extraction() {
+                var keywordArr = $searchInput.val().toLowerCase().replace('　', ' ').split(' '); // 入力文字列を配列に格納
+                $searchElem.removeClass(excludedClass).show();// 現在非表示にしているリストを表示する
+                for (var i = 0; i < keywordArr.length; i++) {
+                    for (var j = 0; j < $searchElem.length; j++) {
+                        var thisString = $searchElem.eq(j).text().toLowerCase();
+                        if(thisString.indexOf(keywordArr[i]) == -1) { // 入力文字列と一致する文字列がない場合
+                            $searchElem.eq(j).addClass(excludedClass); // 絞り込み対象外のclass付与
+                        }
+                    }
+                }
+                $('.' + excludedClass).hide(); // 絞り込み対象外の要素の非表示
+            }
+
+            $searchInput.on('load keyup blur', function() {
+                extraction();
+            });
+        });
+
+
+        ////detail用のスワイプ検知機能を実装
+        $(function() {
+          $('.detailTitle').on('touchstart', onTouchStart); //指が触れたか検知
+          $('.detailTitle').on('touchmove', onTouchMove); //指が動いたか検知
+          $('.detailTitle').on('touchend', onTouchEnd); //指が離れたか検知
+          var direction, position;
+
+          //スワイプ開始時の横方向の座標を格納
+          function onTouchStart(event) {
+            position = getPosition(event);
+            direction = ''; //一度リセットする
+          }
+
+          //スワイプの方向（left／right）を取得
+          function onTouchMove(event) {
+            if (position - getPosition(event) > 70) { // 70px以上移動しなければスワイプと判断しない
+              direction = 'top'; //左と検知
+            } else if (position - getPosition(event) < -70){  // 70px以上移動しなければスワイプと判断しない
+              direction = 'bottom'; //右と検知
+            }
+          }
+
+          function onTouchEnd(event) {
+            if (direction == 'top'){
+                $(full).prop('checked',true).change();
+            } else if (direction == 'bottom' && $("#detail").scrollTop() == 0){
+                $(full).prop('checked',false).change();
+            }
+          }
+
+          //横方向の座標を取得
+          function getPosition(event) {
+            return event.originalEvent.touches[0].pageY;
+          }
+        });
+
+    </script>
+
+<?php get_footer(); ?>

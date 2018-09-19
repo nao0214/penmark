@@ -1,0 +1,48 @@
+<ons-page id="timetableDetailPage">
+
+    <ons-toolbar>
+        <div class="left"><ons-back-button>戻る</ons-back-button></div>
+        <div class="center">時間割詳細</div>
+    </ons-toolbar>
+
+    <p>
+      <ons-icon icon="book"></ons-icon>科目名<br>
+      <ons-input id="subject" type="text" value="" placeholder="ex...文学Ⅱ"></ons-input>
+    </p>
+
+    <p>
+      <ons-icon icon="user"></ons-icon>教授名<br>
+      <ons-input id="teacher" type="text" value="" placeholder="ex...福沢諭吉"></ons-input>
+    </p>
+
+    <p>
+      <ons-icon icon="map-marker"></ons-icon>教室名<br>
+      <ons-input id="room" type="text" value="" placeholder="ex...DB201"></ons-input>
+    </p>
+
+    <p>
+      <ons-icon icon="paint-brush"></ons-icon>カラー選択<br>
+      <ons-radio name="color" type="radio" value="#b5defd"></ons-radio>
+      <ons-radio name="color" type="radio" value="#b1ecfa"></ons-radio>
+      <ons-radio name="color" type="radio" value="#b0e9e8"></ons-radio>
+      <ons-radio name="color" type="radio" value="#c9c9fc"></ons-radio>
+      <ons-radio name="color" type="radio" value="#f7c7f9"></ons-radio>
+      <ons-radio name="color" type="radio" value="#fcc1e9"></ons-radio>
+      <ons-radio name="color" type="radio" value="#ffc2cb"></ons-radio>
+      <ons-radio name="color" type="radio" value="#ffccb3"></ons-radio>
+      <ons-radio name="color" type="radio" value="#fdf1ad"></ons-radio>
+      <ons-radio name="color" type="radio" value="#cfefb0"></ons-radio>
+      <ons-radio name="color" type="radio" value="#bbf6d5"></ons-radio>
+      <ons-radio name="color" type="radio" value="#d2d8de"></ons-radio>
+    </p>
+
+    <p>
+      <ons-icon icon="bookmark"></ons-icon>メモ<br>
+      <textarea id="memo" type="text" value="" placeholder="ex...出席あり。5/3休講"></textarea>
+    </p>
+
+    <p>
+      <ons-button id="timetableSave">保存</ons-button>
+      <ons-button id="timetableRemove">クリア</ons-button>
+    </p>
+</ons-page>
